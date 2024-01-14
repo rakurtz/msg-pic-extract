@@ -1,5 +1,5 @@
 [package]
-name = "msg-pic-extract"
+name = "msg-extractor"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,3 +11,17 @@ hex = "0.4.3"
 msg_parser = "0.1.1"
 open = "5.0.1"
 rand = "0.8.5"
+
+#ui
+egui = "0.25.0"
+
+eframe = { version = "0.25.0", default-features = false, features = [
+    "accesskit",     # Make egui comptaible with screen readers. NOTE: adds a lot of dependencies.
+    "default_fonts", # Embed the default egui fonts.
+    "glow",          # Use the glow rendering backend. Alternative: "wgpu".
+] }
+log = "0.4"
+env_logger = "0.10"
+
+
+
