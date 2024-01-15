@@ -12,7 +12,8 @@ msg_parser = "0.1.1"
 open = "5.0.1"
 rand = "0.8.5"
 
-#ui
+#
+[target.'cfg(unix)'.dependencies]
 egui = "0.25.0"
 
 eframe = { version = "0.25.0", default-features = false, features = [
@@ -22,6 +23,11 @@ eframe = { version = "0.25.0", default-features = false, features = [
 ] }
 log = "0.4"
 env_logger = "0.10"
+
+[target.'cfg(windows)'.dependencies]
+native-windows-gui = "1.0.12"
+native-windows-derive = "1.0.3" # Optional. Only if the derive macro is used.
+
 
 
 
