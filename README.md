@@ -5,7 +5,7 @@ A simple to use, cross-platform .msg-file attachment extractor written in Rust.
 
 
 ## Acknowledgements
-msg-extractor is mainly based on the great crate msg-parser by marirs. Thanks, man!
+msg-extractor is mainly based on the great crate msg-parser by [marirs](https://github.com/marirs). Thanks, man!
  - [msg-parser](https://github.com/marirs/msg-parser-rs)
  - [Open](https://github.com/Byron/open-rs)
  - [Slint](https://github.com/slint-ui/slint/blob/master/LICENSES/LicenseRef-Slint-Royalty-free-1.1.md)
@@ -37,7 +37,7 @@ Mac: [msg-extractor](https://github.com/rakurtz/msg-pic-extract/releases/downloa
 ![App Screenshot](https://github.com/rakurtz/msg-pic-extract/blob/main/screenshot.png)
 
 
-## Usage/Examples
+## Usage
 
 1. execute msg-extractor.exe or run the binary on mac
 2. click on open temporary folder
