@@ -9,7 +9,7 @@ use anyhow::Result;
 
 
 pub struct Extractor {
-    temp_dir: PathBuf,
+    pub temp_dir: PathBuf,
     message_paths: Vec<PathBuf>
 }
 
@@ -29,10 +29,10 @@ impl Extractor {
     pub fn run(&mut self) -> Result<(), anyhow::Error> {
         self.read_dir()?;
         for path in &self.message_paths {
-            if !is_msg_file(&path) {
+            if !is_msg_file(path) {
                 continue;
             }
-            let message = Message::new(&path)?;
+            let message = Message::new(path)?;
             message.extract_attachments()?;
             message.move_msg_to_dest()?;
         }
