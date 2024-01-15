@@ -31,7 +31,7 @@ Mac: // to be added
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot](https://github.com/rakurtz/msg-pic-extract/blob/main/screenshot.png)
 
 
 ## Usage/Examples
@@ -39,7 +39,7 @@ Mac: // to be added
 1. execute msg-extractor.exe or run the binary on mac
 2. click on open temporary folder
 3. copy & paste or drag & drop your .msg-files to the opened folder 
-4. click on "Run" (Umwandeln!)
+4. click on "Run" (Extrahieren!)
 
 The program will create a new folder for each .msg-file, named with a short randomized prefix, sender's name and subject. Inside this folder you should find all attachments of that particular email and also the .msg file itself.
 

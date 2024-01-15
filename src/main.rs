@@ -86,7 +86,7 @@ slint::slint! {
             HorizontalLayout {
                 spacing: 10px;
                 Text {
-                    text: "Message Extractor";
+                    text: "MSG-Extractor";
                     font-size: 22px;
                     horizontal-alignment: left;
                 }
@@ -103,14 +103,14 @@ slint::slint! {
             }
             Text {text: "1. Temporären Ordner öffnen";}
             Text {text: "2. .msg-Dateien per drag & drop hineinziehen";}
-            Text {text: "3. \"Umwandeln!\" klicken";}
+            Text {text: "3. \"Extrahieren!\" klicken";}
             Text {text: " ";}
 
             HorizontalLayout { 
-                btn_tmp := Button { text: "temporären Ordner öffnen"; }
-                btn_extract := Button { text: "Umwandeln!"; } 
+                btn_tmp := Button { text: "Temporären Ordner öffnen"; }
+                btn_extract := Button { text: "Extrahieren!"; } 
             }
-            btn_exit := Button { text: "Berenigen und Beenden"; }
+            btn_exit := Button { text: "Bereinigen und Beenden"; }
         }
     }
 
