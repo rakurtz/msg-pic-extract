@@ -1,57 +1,59 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::{sync::Mutex, rc::Rc, fs};
 use msg_extractor::extractor::Extractor;
 use std::path::Path;
-
+use std::{fs, rc::Rc, sync::Mutex};
 
 pub fn main() {
     let slint_app = SlintApp::new().unwrap();
     let extractor = Rc::new(Mutex::new(Extractor::new()));
-    let tmp_folder = extractor.lock().unwrap().temp_dir.clone(); 
+    let tmp_folder = extractor.lock().unwrap().temp_dir.clone();
     write_licence_file(&tmp_folder);
     let extractor1 = extractor.clone();
     let extractor2 = extractor.clone();
 
-    slint_app.on_button_tmp_pressed( move || {
-        extractor.lock().unwrap().open_temp().expect("Error: Couldn't open temporary folder.");
+    slint_app.on_button_tmp_pressed(move || {
+        extractor
+            .lock()
+            .unwrap()
+            .open_temp()
+            .expect("Error: Couldn't open temporary folder.");
     });
 
-    
-    slint_app.on_button_extract_pressed( move || {
+    slint_app.on_button_extract_pressed(move || {
         if let Err(e) = extractor1.lock().unwrap().run() {
             eprintln!("Error: Extraction didn't work: {:?}", e)
         }
     });
 
-    slint_app.on_button_exit_pressed( move || {
-        match extractor2.lock().unwrap().clean_up() {
-            Err(e) => eprintln!("Error: Couldn't clean up temporary folder {:?}", e),
-            Ok(_) => {
-                println!("Good bye!");
-                std::process::exit(0);
-            }
+    slint_app.on_button_exit_pressed(move || match extractor2.lock().unwrap().clean_up() {
+        Err(e) => eprintln!("Error: Couldn't clean up temporary folder {:?}", e),
+        Ok(_) => {
+            println!("Good bye!");
+            std::process::exit(0);
         }
-    }); 
-    
-    slint_app.on_show_info( move || {
-        if let Err(e) = open::that(tmp_folder.join("Lizenz.html")) {
-            eprintln!("Error: Couldn't open licence file in Browser. {:?}", e); 
-        }
+    });
 
+    slint_app.on_show_info(move || {
+        if let Err(e) = open::that(tmp_folder.join("Lizenz.html")) {
+            eprintln!("Error: Couldn't open licence file in Browser. {:?}", e);
+        }
     });
 
     slint_app.run().unwrap();
- 
 }
 
 fn write_licence_file(tmp_folder: &Path) {
-    if let Err(e) = fs::write(tmp_folder.join("Lizenz.html"), msg_extractor::licence::LICENCE) {
-        eprintln!("Error: Couldn't write licence file to temporary folder. {:?}", e);
+    if let Err(e) = fs::write(
+        tmp_folder.join("Lizenz.html"),
+        msg_extractor::licence::LICENCE,
+    ) {
+        eprintln!(
+            "Error: Couldn't write licence file to temporary folder. {:?}",
+            e
+        );
     }
 }
-
-
 
 slint::slint! {
 
@@ -80,7 +82,7 @@ slint::slint! {
         callback button-extract-pressed <=> btn_extract.clicked;
         callback button-exit-pressed <=> btn_exit.clicked;
         callback show-info <=> info.clicked;
-        
+
         VerticalBox {
             alignment: start;
             HorizontalLayout {
@@ -96,7 +98,7 @@ slint::slint! {
                     //text-size: 11px;
                 }
             }
-            
+
             Text {text: " ";}
             Text {
                 text: "Anleitung:";
@@ -106,14 +108,12 @@ slint::slint! {
             Text {text: "3. \"Extrahieren!\" klicken";}
             Text {text: " ";}
 
-            HorizontalLayout { 
+            HorizontalLayout {
                 btn_tmp := Button { text: "Temporären Ordner öffnen"; }
-                btn_extract := Button { text: "Extrahieren!"; } 
+                btn_extract := Button { text: "Extrahieren!"; }
             }
             btn_exit := Button { text: "Bereinigen und Beenden"; }
         }
     }
-
-   
 
 }

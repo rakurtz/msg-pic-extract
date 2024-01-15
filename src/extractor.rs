@@ -7,21 +7,20 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 
-
 pub struct Extractor {
     pub temp_dir: PathBuf,
-    message_paths: Vec<PathBuf>
+    message_paths: Vec<PathBuf>,
 }
 
 impl Extractor {
     pub fn new() -> Self {
         Extractor {
-            temp_dir: self::create_temp_dir().expect("Error: Couldn't create temporary folder. Exiting."),
+            temp_dir: self::create_temp_dir()
+                .expect("Error: Couldn't create temporary folder. Exiting."),
             message_paths: vec![],
         }
     }
 
-    
     pub fn open_temp(&self) -> io::Result<()> {
         open::that(&self.temp_dir)
     }
@@ -47,17 +46,14 @@ impl Extractor {
             .into_iter()
             .filter(|path| path.is_file() && path.extension() == Some(OsStr::new("msg")))
             .collect::<Vec<PathBuf>>();
-    
+
         Ok(())
     }
 
     pub fn clean_up(&self) -> Result<(), io::Error> {
         fs::remove_dir_all(&self.temp_dir)
     }
-    
 }
-
-
 
 pub struct Message {
     parser: Outlook,
@@ -70,14 +66,13 @@ impl Message {
         let file = path.clone();
         let parent = file.parent().unwrap();
         let parser = Outlook::from_path(path)?;
-        let dest = parent.join(truncated_unique_mail_identifier(&parser.sender.name, &parser.subject));
+        let dest = parent.join(truncated_unique_mail_identifier(
+            &parser.sender.name,
+            &parser.subject,
+        ));
         create_dir(&dest)?;
 
-        Ok(Message {
-            parser,
-            file,
-            dest,
-        })
+        Ok(Message { parser, file, dest })
     }
 
     pub fn extract_attachments(&self) -> anyhow::Result<()> {
@@ -94,34 +89,17 @@ impl Message {
     }
 
     pub fn move_msg_to_dest(&self) -> io::Result<()> {
-        fs::copy(
-            &self.file,
-            self.dest.join(self.file.file_name().unwrap()),
-        )?;
+        fs::copy(&self.file, self.dest.join(self.file.file_name().unwrap()))?;
         fs::remove_file(&self.file)?;
         Ok(())
     }
-
 }
-
 
 // helper functions
 
 fn is_msg_file(path: &Path) -> bool {
     path.is_file() || path.extension() == Some(OsStr::new("msg"))
 }
-
-// pub fn read_dir(path: &Path) -> Result<Vec<PathBuf>, io::Error> {
-//     let mut entries = fs::read_dir(path)?
-//         .map(|res| res.map(|e| e.path()))
-//         .collect::<Result<Vec<_>, io::Error>>()?;
-//     entries = entries
-//         .into_iter()
-//         .filter(|path| path.is_file() && path.extension() == Some(OsStr::new("msg")))
-//         .collect::<Vec<PathBuf>>();
-
-//     Ok(entries)
-// }
 
 fn create_temp_dir() -> Result<PathBuf, io::Error> {
     // create folder inside a random hex folder inside OS' temp-dir
@@ -134,7 +112,6 @@ fn create_temp_dir() -> Result<PathBuf, io::Error> {
         Err(e) => Err(e),
     }
 }
-
 
 fn create_dir(path: &PathBuf) -> io::Result<()> {
     if fs::read_dir(path).is_err() {
@@ -150,13 +127,13 @@ fn truncated_unique_mail_identifier(name: &str, subject: &str) -> PathBuf {
         0 => "Unbekannt",
         1..=15 => name,
         _ => &name[0..15],
-    };    
+    };
     let subject = match subject.len() {
         0 => "mail_ohne_Betreff",
         1..=25 => subject,
         _ => &subject[0..25],
     };
-    
+
     let identifer = format!("{}_{}_{}", prefix, name, subject);
     PathBuf::from(identifer)
 }
