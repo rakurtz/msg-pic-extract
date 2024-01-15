@@ -8,6 +8,57 @@ use std::path::{Path, PathBuf};
 use anyhow::Result;
 
 
+pub struct Extractor {
+    temp_dir: PathBuf,
+    message_paths: Vec<PathBuf>
+}
+
+impl Extractor {
+    pub fn new() -> Self {
+        Extractor {
+            temp_dir: self::create_temp_dir().expect("Error: Couldn't create temporary folder. Exiting."),
+            message_paths: vec![],
+        }
+    }
+
+    
+    pub fn open_temp(&self) -> io::Result<()> {
+        open::that(&self.temp_dir)
+    }
+
+    pub fn run(&mut self) -> Result<(), anyhow::Error> {
+        self.read_dir()?;
+        for path in &self.message_paths {
+            if !is_msg_file(&path) {
+                continue;
+            }
+            let message = Message::new(&path)?;
+            message.extract_attachments()?;
+            message.move_msg_to_dest()?;
+        }
+        Ok(())
+    }
+
+    fn read_dir(&mut self) -> Result<(), io::Error> {
+        let entries = fs::read_dir(&self.temp_dir)?
+            .map(|res| res.map(|e| e.path()))
+            .collect::<Result<Vec<_>, io::Error>>()?;
+        self.message_paths = entries
+            .into_iter()
+            .filter(|path| path.is_file() && path.extension() == Some(OsStr::new("msg")))
+            .collect::<Vec<PathBuf>>();
+    
+        Ok(())
+    }
+
+    pub fn clean_up(&self) -> Result<(), io::Error> {
+        fs::remove_dir_all(&self.temp_dir)
+    }
+    
+}
+
+
+
 pub struct Message {
     parser: Outlook,
     file: PathBuf,
@@ -51,28 +102,28 @@ impl Message {
         Ok(())
     }
 
-    pub fn os_open_target(&self) -> io::Result<()> {
-        open::that(&self.dest)
-    }
 }
 
-pub fn is_msg_file(path: &Path) -> bool {
+
+// helper functions
+
+fn is_msg_file(path: &Path) -> bool {
     path.is_file() || path.extension() == Some(OsStr::new("msg"))
 }
 
-pub fn read_dir(path: &Path) -> Result<Vec<PathBuf>, io::Error> {
-    let mut entries = fs::read_dir(path)?
-        .map(|res| res.map(|e| e.path()))
-        .collect::<Result<Vec<_>, io::Error>>()?;
-    entries = entries
-        .into_iter()
-        .filter(|path| path.is_file() && path.extension() == Some(OsStr::new("msg")))
-        .collect::<Vec<PathBuf>>();
+// pub fn read_dir(path: &Path) -> Result<Vec<PathBuf>, io::Error> {
+//     let mut entries = fs::read_dir(path)?
+//         .map(|res| res.map(|e| e.path()))
+//         .collect::<Result<Vec<_>, io::Error>>()?;
+//     entries = entries
+//         .into_iter()
+//         .filter(|path| path.is_file() && path.extension() == Some(OsStr::new("msg")))
+//         .collect::<Vec<PathBuf>>();
 
-    Ok(entries)
-}
+//     Ok(entries)
+// }
 
-pub fn create_temp_dir() -> Result<PathBuf, io::Error> {
+fn create_temp_dir() -> Result<PathBuf, io::Error> {
     // create folder inside a random hex folder inside OS' temp-dir
     let mut out_path = env::temp_dir();
     let mut folder_name = get_rnd_hex(5);
