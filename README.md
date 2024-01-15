@@ -25,8 +25,11 @@ After a successful build you'll find the binary in the `target/release` folder.
 
 
 ### Download a binary
-Windows: // to be added
-Mac: // to be added
+[Releases](https://github.com/rakurtz/msg-pic-extract/releases/)
+
+Windows: [msg-extractor.exe](https://github.com/rakurtz/msg-pic-extract/releases/download/v.01/msg-extractor.exe) v.0.1 (18.9 MB)
+
+Mac: [msg-extractor](https://github.com/rakurtz/msg-pic-extract/releases/download/v.01/msg-extractor) v.0.1 (7.5 MB)
 
 
 ## Screenshots
